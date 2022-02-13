@@ -12,12 +12,9 @@ IF (Boost_FOUND)
   ADD_DEFINITIONS( "-DHAS_BOOST" )
 ENDIF()
 
-add_library(matlib board/matrix.cpp)
-
 add_library(formlib piece/form.cpp)
 
 add_executable(matrixtest board/matrix.test.cpp)
-target_link_libraries(matrixtest LINK_PUBLIC matlib)
 target_link_libraries(matrixtest LINK_PUBLIC ${Boost_LIBRARIES})
 
 add_executable(formtest piece/form.test.cpp)
