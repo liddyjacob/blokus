@@ -10,11 +10,11 @@ using Cell = std::pair<int, int>;
 using BaseForm = std::vector<Cell>;
 
 
-class Form{
+class FreePolyomino{
 public:
-    Form(BaseForm);
+    FreePolyomino(BaseForm);
 
-    bool operator==(const BaseForm&);
+    bool operator==(const FreePolyomino&);
     const int size(){return bf_.size();}
 private:
     BaseForm bf_;

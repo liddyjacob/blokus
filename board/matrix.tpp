@@ -4,14 +4,6 @@
 ///   * m1 == m2
 ///   * m.num_rows(), m.num_cols(), m.num_entries
 
-/*
- * 00
- * 10
- * 20
- * 30
- * 40
- *
- */
 
 template <typename T>
 Matrix<T>::Matrix(size_t r, size_t c, T init)

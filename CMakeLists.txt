@@ -12,11 +12,11 @@ IF (Boost_FOUND)
   ADD_DEFINITIONS( "-DHAS_BOOST" )
 ENDIF()
 
-add_library(formlib piece/form.cpp)
+add_library(polyominolib piece/polyomino.cpp)
 
 add_executable(matrixtest board/matrix.test.cpp)
 target_link_libraries(matrixtest LINK_PUBLIC ${Boost_LIBRARIES})
 
-add_executable(formtest piece/form.test.cpp)
-target_link_libraries(formtest LINK_PUBLIC formlib)
-target_link_libraries(formtest LINK_PUBLIC ${Boost_LIBRARIES})
+add_executable(polyominotest piece/polyomino.test.cpp)
+target_link_libraries(polyominotest LINK_PUBLIC polyominolib)
+target_link_libraries(polyominotest LINK_PUBLIC ${Boost_LIBRARIES})
