@@ -82,8 +82,8 @@ void FreePolyomino::generateEdgeHash(){
     {
         {Direction::UP, std::make_pair(0,1)},
         {Direction::RIGHT, std::make_pair(1,0)},
-        {Direction::DOWN, std::make_pair(-1,0)},
-        {Direction::LEFT, std::make_pair(0,-1)},
+        {Direction::DOWN, std::make_pair(0,-1)},
+        {Direction::LEFT, std::make_pair(-1,0)},
     };
 
     std::unordered_map<Direction, std::pair<int,int>> STR_blockdiff = 
@@ -102,21 +102,44 @@ void FreePolyomino::generateEdgeHash(){
         {Direction::LEFT, std::make_pair(-1,-1)},
     };
 
+    std::unordered_map<Direction, Direction> NextDir = 
+    {
+        {Direction::UP, Direction::LEFT},
+        {Direction::RIGHT, Direction::UP},
+        {Direction::DOWN, Direction::RIGHT},
+        {Direction::LEFT, Direction::DOWN},
+    };
+
+    std::unordered_map<Direction, Direction> PrevDir = 
+    {
+        {Direction::UP, Direction::RIGHT},
+        {Direction::RIGHT, Direction::DOWN},
+        {Direction::DOWN,Direction::LEFT},
+        {Direction::LEFT, Direction::UP},
+    };
+
     Direction current_dir = Direction::UP;
 
     // Note that if you go CCW, you do not move. If you go STRAIGHT, you move in the 
     // CCW block direction. If you go CW. you move into the STRAIGHT position.
     // Loop around the entire polymino
     do {
+        std::cout << static_cast<int>(current_dir) << "\n";
+        std::cout << current_edge.first << " " << current_edge.second << "\n";
+
+
         // Check if next turn is right:
         Cell ccw_blocker = current_edge;
         auto ccw_diff = CCW_blockdiff[current_dir];
             ccw_blocker.first += ccw_diff.first; 
             ccw_blocker.second += ccw_diff.second; 
 
-        if (bf_.count(ccw_blocker)){
-            current_dir = static_cast<Direction>
-                ((static_cast<int>(current_dir) + 1) % 4);
+        std::cout << "CCW blocker\n";
+        std::cout << ccw_blocker.first << " " << ccw_blocker.second << "\n";
+
+
+        if (bf_.count(ccw_blocker) > 0){
+            current_dir = PrevDir[current_dir];
             edgeHash_.push_back(EdgeDir::CCW);
 
             continue;
@@ -128,7 +151,9 @@ void FreePolyomino::generateEdgeHash(){
             straight_blocker.first += straight_diff.first; 
             straight_blocker.second += straight_diff.second; 
 
-        if (bf_.count(straight_blocker)){
+  
+
+        if (bf_.count(straight_blocker)  > 0){
             current_edge = ccw_blocker; // move to what would have blocked the right.
             edgeHash_.push_back(EdgeDir::STR);
 
@@ -137,10 +162,11 @@ void FreePolyomino::generateEdgeHash(){
  
         // If it is nonoe of the others, the turn must be left.
         
-        current_dir = static_cast<Direction>
-            ((static_cast<int>(current_dir) -1) % 4);
+        current_dir = NextDir[current_dir];
         current_edge = straight_blocker; 
         edgeHash_.push_back(EdgeDir::CW);
+
+
     } while (current_edge != edge_start && current_dir != Direction::UP);
     /// when these two conditions are satysfied we have looped the entire polyomino
 
