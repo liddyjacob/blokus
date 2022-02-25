@@ -167,7 +167,7 @@ void FreePolyomino::generateEdgeHash(){
         edgeHash_.push_back(EdgeDir::CW);
 
 
-    } while (current_edge != edge_start && current_dir != Direction::UP);
+    } while ((current_edge != edge_start) || (current_dir != Direction::UP));
     /// when these two conditions are satysfied we have looped the entire polyomino
 
     std::for_each(edgeHash_.begin(), edgeHash_.end(),
