@@ -53,9 +53,9 @@ private:
     enum class EdgeDir{STR, CCW, CW};
 
     // This algorithm generates the edgehash and saves it.
-    void generateEdgeHash();
-
-
+    void generateEdgeHash_();
+    void canonicalize_hash_();
+    bool hashIsLessThan(std::vector<EdgeDir>, std::vector<EdgeDir>);
 
     // This base form contains the physical structure of the polymino
     // It is not necessary but will be helpful if we want to add

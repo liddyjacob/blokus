@@ -39,18 +39,19 @@ bool is_rotation(const std::string& str1, const std::string& str2)
 
 
 
-FreePolyomino::FreePolyomino(BaseForm bf): bf_(bf) { generateEdgeHash(); }
+FreePolyomino::FreePolyomino(BaseForm bf): bf_(bf) { 
+    generateEdgeHash_();
+    canonicalize_hash_();
+}
 
 bool FreePolyomino::operator==(const FreePolyomino& pr){
     // All we need to do is compare the hash values.
-    return false;
+    return this->edgeHash_ == pr.edgeHash_;
 }
 
-void FreePolyomino::generateEdgeHash(){
+void FreePolyomino::generateEdgeHash_(){
     // Initialize to empty.
     edgeHash_ = std::vector<FreePolyomino::EdgeDir>();
-
-    std::cout << "Generating stuff\n";
 
     if (this->size() == 0){
         return;
@@ -124,19 +125,11 @@ void FreePolyomino::generateEdgeHash(){
     // CCW block direction. If you go CW. you move into the STRAIGHT position.
     // Loop around the entire polymino
     do {
-        std::cout << static_cast<int>(current_dir) << "\n";
-        std::cout << current_edge.first << " " << current_edge.second << "\n";
-
-
         // Check if next turn is right:
         Cell ccw_blocker = current_edge;
         auto ccw_diff = CCW_blockdiff[current_dir];
             ccw_blocker.first += ccw_diff.first; 
             ccw_blocker.second += ccw_diff.second; 
-
-        std::cout << "CCW blocker\n";
-        std::cout << ccw_blocker.first << " " << ccw_blocker.second << "\n";
-
 
         if (bf_.count(ccw_blocker) > 0){
             current_dir = PrevDir[current_dir];
@@ -169,9 +162,45 @@ void FreePolyomino::generateEdgeHash(){
 
     } while ((current_edge != edge_start) || (current_dir != Direction::UP));
     /// when these two conditions are satysfied we have looped the entire polyomino
+}
 
-    std::for_each(edgeHash_.begin(), edgeHash_.end(),
-        [](auto a){std::cout << static_cast<int>(a) << ", "; });
-    std::cout << std::endl;
+void FreePolyomino::canonicalize_hash_(){
+    // First, double the edge hash.
+    std::vector<EdgeDir> edge_hash_double = edgeHash_;
 
+    for(int i = 0; i < edgeHash_.size(); ++i){
+        edge_hash_double.push_back(edgeHash_[i]);
+    }
+
+    std::vector<EdgeDir> best_edgehash = edgeHash_;
+
+    // Now, generate every possible cycled hash, and compare
+    for(int i = 1; i < edgeHash_.size(); ++i){
+        std::vector<EdgeDir> comp_edgehash;
+        comp_edgehash.insert(comp_edgehash.end(), 
+            edge_hash_double.begin() + i,
+            edge_hash_double.begin() + i + edgeHash_.size());
+
+        if (FreePolyomino::hashIsLessThan(comp_edgehash, best_edgehash)){
+            best_edgehash = comp_edgehash;
+        }
+    }
+
+
+    edgeHash_ = best_edgehash;
+}
+
+bool FreePolyomino::hashIsLessThan(std::vector<EdgeDir> hash_l, std::vector<EdgeDir> hash_r){
+    // compare hashes to see which is smaller
+    const size_t stopping_length = std::min(hash_l.size(), hash_r.size());
+
+    // element-wise comparison
+    for(int i = 0; i < stopping_length; ++i){
+        if (hash_l[i] != hash_r[i]){
+            return static_cast<int>(hash_l[i]) < static_cast<int>(hash_r[i]);
+        }
+    }
+
+    // size comparison if same.
+    return hash_l.size() < hash_r.size();
 }
