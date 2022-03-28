@@ -8,6 +8,7 @@ https://parallelstripes.wordpress.com/2009/12/20/generating-polyominoes/
 */
 using Cell = std::pair<int, int>;
 
+
 // Need to define hash for this
 struct pair_hash
 {
@@ -19,6 +20,15 @@ struct pair_hash
 
 using BaseForm = std::unordered_set<Cell, pair_hash>;
 
+BaseForm reflect(const BaseForm&);
+
+// When analyzing multiple polyminos, this is helpful.
+// STRaight, CounterClockWise, ClockWise.
+enum class EdgeDir{STR, CCW, CW};
+
+std::vector<EdgeDir> describeByEdges(const BaseForm&);
+
+std::vector<EdgeDir> canonicalizeEdges(std::vector<EdgeDir>);
 
 /*
 A Free Polyomino without holes
@@ -44,18 +54,19 @@ class FreePolyomino{
 public:
     // The base form is needed to compute the edge hash.
     FreePolyomino(BaseForm);
+    FreePolyomino(const FreePolyomino&);
 
-    bool operator==(const FreePolyomino&);
-    const int size(){return bf_.size();}
+    bool operator==(const FreePolyomino&) const;
+    int size() const{return bf_.size();}
+
+    std::vector<EdgeDir> getEdgeHash() const;
 private:
-    // When analyzing multiple polyminos, this is helpful.
-    // STRaight, CounterClockWise, ClockWise.
-    enum class EdgeDir{STR, CCW, CW};
 
     // This algorithm generates the edgehash and saves it.
     void generateEdgeHash_();
+    
+    // this algorithm determines what the edges are for the base polyomino.
     void canonicalize_hash_();
-    bool hashIsLessThan(std::vector<EdgeDir>, std::vector<EdgeDir>);
 
     // This base form contains the physical structure of the polymino
     // It is not necessary but will be helpful if we want to add
@@ -67,3 +78,19 @@ private:
     // describing the edges
     std::vector<EdgeDir> edgeHash_;
 };
+
+namespace std
+{
+    template <>
+    struct hash<FreePolyomino>
+    {
+        size_t operator()(const FreePolyomino& fp) const{
+            std::size_t seed = fp.size();
+            for(auto& i : fp.getEdgeHash()) {
+              seed ^= static_cast<int>(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
+        }
+
+    };
+}

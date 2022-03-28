@@ -1,12 +1,13 @@
+#pragma once
 
 #include "color.hpp"
-#include "form.hpp"
+#include "polyomino.hpp"
 
 class Piece{
 public:
-    Piece(Form, Color);
+    Piece(FreePolyomino, Color);
 
 private:
-    Form form_;
+    FreePolyomino form_;
     Color c_;
 }

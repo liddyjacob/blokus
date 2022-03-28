@@ -1,6 +1,6 @@
 #include "polyomino.hpp"
 #include <utility>
-#define BOOST_TEST_MODULE FormTest
+#define BOOST_TEST_MODULE PolyominoTest
 #include <boost/test/unit_test.hpp>
 
 /* Check initialization and num_entries */
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(FormInit)
 }
 
 /* Check if orientation matters for the polymino*/
-BOOST_AUTO_TEST_CASE(FormEquality)
+BOOST_AUTO_TEST_CASE(FormRotEquality)
 {
   FreePolyomino f1 = FreePolyomino(BaseForm{Cell(0,0), Cell(0,1), Cell(0,2), Cell(1,1)});
   FreePolyomino f2 = FreePolyomino(BaseForm{Cell(0,0), Cell(1,0), Cell(1,1), Cell(2,0)});
@@ -28,3 +28,11 @@ BOOST_AUTO_TEST_CASE(FormEquality)
 
 }
 
+/* Check if flip orientation matters for the polymino*/
+BOOST_AUTO_TEST_CASE(FormFlipEquality)
+{
+  FreePolyomino f1 = FreePolyomino(BaseForm{Cell(0,-1), Cell(0,0), Cell(1,0), Cell(2,0), Cell(1,1)});
+  FreePolyomino f2 = FreePolyomino(BaseForm{Cell(-1,0), Cell(0,0), Cell(0,1), Cell(0,2), Cell(1,1)});
+  BOOST_CHECK(f1 == f2);
+
+}

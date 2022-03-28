@@ -13,6 +13,7 @@ IF (Boost_FOUND)
 ENDIF()
 
 add_library(polyominolib piece/polyomino.cpp)
+add_library(generatorlib utils/polyominoGenerator.cpp)
 
 add_executable(matrixtest board/matrix.test.cpp)
 target_link_libraries(matrixtest LINK_PUBLIC ${Boost_LIBRARIES})
@@ -20,3 +21,9 @@ target_link_libraries(matrixtest LINK_PUBLIC ${Boost_LIBRARIES})
 add_executable(polyominotest piece/polyomino.test.cpp)
 target_link_libraries(polyominotest LINK_PUBLIC polyominolib)
 target_link_libraries(polyominotest LINK_PUBLIC ${Boost_LIBRARIES})
+
+add_executable(generatortest utils/polyominoGenerator.test.cpp)
+target_link_libraries(generatortest LINK_PUBLIC generatorlib)
+target_link_libraries(generatortest LINK_PUBLIC polyominolib)
+target_link_libraries(generatortest LINK_PUBLIC ${Boost_LIBRARIES})
+
