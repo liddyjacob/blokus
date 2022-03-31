@@ -38,4 +38,4 @@ xx
 xx
 ----
 */
-std::unordered_set<FreePolyomino> generate_polyominos_0_to_n(const int& n, bool holes=false);
+std::unordered_set<FreePolyomino> generate_polyominos_0_to_n(const int& n);

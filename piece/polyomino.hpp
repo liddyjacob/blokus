@@ -2,6 +2,7 @@
 #include <utility>
 #include <vector>
 #include <unordered_set>
+
 /*
 Syntax based off: 
 https://parallelstripes.wordpress.com/2009/12/20/generating-polyominoes/
@@ -18,7 +19,17 @@ struct pair_hash
     }
 };
 
-using BaseForm = std::unordered_set<Cell, pair_hash>;
+struct pair_eq
+{
+    template <class T1, class T2>
+    bool operator()(const std::pair<T1, T2> &p1, const std::pair<T1, T2> &p2) const{
+        return (p1.first == p2.first) && (p1.second == p2.second);
+    }
+};
+
+
+
+using BaseForm = std::unordered_set<Cell, pair_hash, pair_eq>;
 
 BaseForm reflect(const BaseForm&);
 
@@ -60,6 +71,9 @@ public:
     int size() const{return bf_.size();}
 
     std::vector<EdgeDir> getEdgeHash() const;
+
+    BaseForm getBaseForm() const;
+
 private:
 
     // This algorithm generates the edgehash and saves it.
@@ -93,4 +107,78 @@ namespace std
         }
 
     };
+
+    template <>
+    struct equal_to<FreePolyomino>
+    {
+        bool operator()(const FreePolyomino& lfp, const FreePolyomino& rfp) const{
+            return (lfp.getEdgeHash() == rfp.getEdgeHash());
+        }
+    };
 }
+
+
+#include <algorithm>
+#include <vector>
+
+// For debugging purpose:
+template <class Os>
+Os& operator<<(Os& os, const BaseForm& fo) {
+
+    int lmin = 1000000000;
+
+    std::for_each(fo.begin(), fo.end(), [&](Cell c)
+        {
+            if (c.first < lmin){
+                lmin = c.first;
+            }
+        });
+
+    // Sort these from top to bottom, left to right.
+    std::vector<Cell> vectorized_cells(fo.begin(), fo.end());
+
+    auto cmp = [](const Cell& lc, const Cell& rc){
+        if (lc.second != rc.second){
+            return lc.second > rc.second;
+        }
+        return lc.first < rc.first;
+    };
+
+    sort(vectorized_cells.begin(), vectorized_cells.end(), cmp);
+
+    int level = vectorized_cells[0].second;
+    int num_spaces =  vectorized_cells[0].first - lmin;
+    int prev_x = vectorized_cells[0].first;
+
+    for (Cell c : vectorized_cells){
+
+        if (c.second < level){
+            for (int i = c.second; i < level; ++i){
+                os << '\n';
+            }
+
+            level = c.second;
+            num_spaces =  c.first - lmin;
+        } else {
+            if (num_spaces == 0){
+                num_spaces = (c.first - prev_x) - 1;
+            }
+        }
+
+        for (int i = 0; i < num_spaces; ++i){
+            os << ' ';
+        } 
+
+        os << 'x';
+        num_spaces = 0;
+
+        prev_x = c.first;
+
+    }
+
+    //bool o{};
+    //for (const auto& e : v)
+    //    os << (o ? ", " : (o = 1, " ")) << e;
+    return os << "\n";
+}
+ 

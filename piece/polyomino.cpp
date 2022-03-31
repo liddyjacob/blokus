@@ -219,6 +219,10 @@ std::vector<EdgeDir> FreePolyomino::getEdgeHash() const{
     return this->edgeHash_;
 }
 
+BaseForm FreePolyomino::getBaseForm() const{
+    return this->bf_;
+}
+
 void FreePolyomino::generateEdgeHash_(){
     // Find edge hash
     auto edgeHash_1 = canonicalizeEdges(describeByEdges(bf_));
@@ -234,8 +238,9 @@ void FreePolyomino::generateEdgeHash_(){
     // std::cout << "\n";
 
     edgeHash_ = edgeDescIsLessThan(edgeHash_1, edgeHash_2) ? edgeHash_1 : edgeHash_2;
-
 }
+
+
 
 void FreePolyomino::canonicalize_hash_(){
     

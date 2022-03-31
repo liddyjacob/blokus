@@ -3,6 +3,8 @@
 #include <utility>
 #define BOOST_TEST_MODULE generateTest
 #include <boost/test/unit_test.hpp>
+#include <iostream>
+#include <algorithm>
 
 /* See if we can generate polyominos on size */
 BOOST_AUTO_TEST_CASE(trivialGenerateTest)
@@ -37,6 +39,8 @@ BOOST_AUTO_TEST_CASE(two_three_four_five_test)
   std::unordered_set<FreePolyomino> five_test = generate_polyominos_0_to_n(5);
 
   BOOST_CHECK_EQUAL(five_test.size(), 21);
+ 
+  std::for_each(five_test.begin(), five_test.end(), [](FreePolyomino fp){ std::cout << fp.getBaseForm() << std::endl;});
 }
 
 // references 
@@ -56,6 +60,8 @@ BOOST_AUTO_TEST_CASE(six_seven_eight_nine_test)
   BOOST_CHECK_EQUAL(eight_test.size(), 21 + 35 + 363);
 
   std::unordered_set<FreePolyomino> five_test = generate_polyominos_0_to_n(9);
+
+
 
   BOOST_CHECK_EQUAL(five_test.size(), 21 + 35 + 363 + 1248);
 }

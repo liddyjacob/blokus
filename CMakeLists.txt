@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 project(Parks_Generator)
 
 
-set(CMAKE_CXX_FLAGS "-std=c++14")
+set(CMAKE_CXX_FLAGS "-std=c++17")
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 
 FIND_PACKAGE(Boost COMPONENTS unit_test_framework REQUIRED)
