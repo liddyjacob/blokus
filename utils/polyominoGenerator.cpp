@@ -8,9 +8,77 @@ std::unordered_set<FreePolyomino> generate_polyominos_n_plus_1
     for(const FreePolyomino& fp : prev_set)
 }
 */
+bool has_hole_n_lt_8(const BaseForm& bf, const Cell& newCell);
 
 // ignore any polyominoes with a hole.
-bool has_hole(const BaseForm& bf){
+// We only need to check near the new cell
+bool has_hole(const BaseForm& bf, const Cell& newCell){
+    if (bf.size() <= 8)
+        return has_hole_n_lt_8(bf, newCell);
+
+    return true; 
+}
+
+    // this algorithm only works up to n = 8
+    
+
+bool has_hole_n_lt_8(const BaseForm& bf, const Cell& newCell){
+    // These are to check if there is possibly a hole 
+    Cell north(newCell.first, newCell.second + 2);
+    Cell northWest(newCell.first - 1, newCell.second + 1);
+    Cell west(newCell.first - 2, newCell.second);
+    Cell southWest(newCell.first - 1, newCell.second - 1);
+    Cell south(newCell.first, newCell.second - 2);
+    Cell southEast(newCell.first + 1, newCell.second - 1);
+    Cell east(newCell.first + 2, newCell.second);
+    Cell northEast(newCell.first + 1, newCell.second + 1);
+
+    // These are to check if any potential nearby holes are filled.
+    Cell nearNorth(newCell.first, newCell.second + 1);
+    Cell nearWest(newCell.first - 1, newCell.second);
+    Cell nearSouth(newCell.first, newCell.second - 1);
+    Cell nearEast(newCell.first + 1, newCell.second);
+
+    // check every possible hole associated with this new block
+    if (bf.count(nearNorth) == 0){
+
+        BaseForm bfNorth = bf;
+        BaseForm northHole({northWest, north, northEast});
+
+        bfNorth.merge(northHole);
+
+        if (bfNorth.size() == bf.size()){
+            return true;
+        }
+    } 
+    if (bf.count(nearWest) == 0){
+        BaseForm bfWest = bf;
+        BaseForm westHole({northWest, west, southWest});
+
+        bfWest.merge(westHole);
+        if (bfWest.size() == bf.size()){
+            return true;
+        }
+    }
+    if (bf.count(nearSouth) == 0){
+        BaseForm bfSouth = bf;
+        BaseForm southHole({southWest, south, southEast});
+
+        bfSouth.merge(southHole);
+        if (bfSouth.size() == bf.size()){
+            return true;
+        }
+
+    }
+    if (bf.count(nearEast) == 0){
+        BaseForm bfEast = bf;
+        BaseForm eastHole({southEast, east, northEast});
+
+        bfEast.merge(eastHole);
+        if (bfEast.size() == bf.size()){
+            return true;
+        }
+    }
 
     return false;
 }
@@ -29,17 +97,23 @@ std::unordered_set<FreePolyomino> extend_baseforms_by_one(FreePolyomino pbase){
         // we do not want to overwrite the original
         
         for (int i = -1; i <=1; i+=2){
-            BaseForm extendedl = base;
-            extendedl.insert(Cell(c.first + i, c.second));
+            // left / right extensions
+            BaseForm extendedx = base;
+            Cell cx(c.first + i, c.second);
+            extendedx.insert(cx);
 
-            BaseForm extendedt = base;
-            extendedt.insert(Cell(c.first, c.second + i));
+            // top/bottom
+            BaseForm extendedy = base;
+            Cell cy(c.first, c.second + i);
+            extendedy.insert(cy);
 
-            if (!has_hole(extendedl))
-                extensions.insert(FreePolyomino(extendedl));
+            if (!has_hole(extendedx, cx))
+                extensions.insert(FreePolyomino(extendedx));
+            
 
-            if (!has_hole(extendedt))
-                extensions.insert(FreePolyomino(extendedt));
+            if (!has_hole(extendedy, cy))
+                extensions.insert(FreePolyomino(extendedy));
+            
 
         }
 
